@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript">
+		// 通过js将时间戳转换成"yyyy--mm--dd"格式
+		function formatDateTime(inputTime) {  
+		    var date = new Date(inputTime);
+		    var y = date.getFullYear();  
+		    var m = date.getMonth() + 1;  
+		    m = m < 10 ? ('0' + m) : m;  
+		    var d = date.getDate();  
+		    d = d < 10 ? ('0' + d) : d;  
+		    var h = date.getHours();
+		    h = h < 10 ? ('0' + h) : h;
+		    var minute = date.getMinutes();
+		    var second = date.getSeconds();
+		    minute = minute < 10 ? ('0' + minute) : minute;  
+		    second = second < 10 ? ('0' + second) : second; 
+		    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;  
+		};
+
+		var url = "http://192.168.137.1:8080/teacher/queryWithRelevanceDetails";
+		$(document).ready(function(){
+			var table = $(".people");
+			$("button").click(function(){
+				$(".people > tr").remove();	
+				$.ajax({
+					type: "GET",
+					url: url,
+					data: "",
+					success: function(value){
+						debugger;
+						$.each(value.data, function(i, n){
+							var teacherTr = "<tr><td colspan='4'>老师</td></tr>";
+								table.append(teacherTr);
+							var tr = "<tr>";
+							tr +="<td>"+(i+1)+"</td>";
+							tr +="<td>"+n.id+"</td>";
+							tr +="<td>"+n.name+"</td>";
+							tr +="<td>"+formatDateTime(n.createTime)+"</td>";
+							tr += "</tr>";
+							table.append(tr);
+
+							$.each(n.students, function(ii, nn){
+								var studentTr = "<tr><td colspan='4'>学生</td></tr>";
+								table.append(studentTr);
+
+								var tr = "<tr>";
+								tr +="<td>"+(ii+1)+"</td>";
+								tr +="<td>"+nn.id+"</td>";
+								tr +="<td>"+nn.name+"</td>";
+								tr +="<td>"+formatDateTime(nn.createTime)+"</td>";
+								tr += "</tr>";
+								table.append(tr);
+							});
+
+						});
+					}
+				});
+			});
+		});
+	</script>
+</head>
+<body>
+<button>获得 JSON 数据</button>
+	<table border="1px" width="900px" class="people">
+		<tr>
+			<td>#</td>
+			<td>id</td>
+			<td>name</td>
+			<td>createTime</td>
+		</tr>
+	</table>
+	
+</body>
+</html>
